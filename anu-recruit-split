@@ -1,3 +1,14 @@
+# This script splits apart the gigantic PDFs that ANU Recruit provides, into
+# individal PDFs.
+#
+# usage: ./anu-recruit-split <input.pdf>
+#
+# The script creates a subdirectory called 'output', with individual
+# directories for each applicant.
+# It should be easy to change the naming scheme; see the last few lines.
+#
+# Written by scott.morrison@anu.edu.au 2016-10-25; reuse freely under the MIT license.
+
 pdfgrep -n 'redundancy' $@ | grep -e 'Have\syou\saccepted\sa\sredundancy\sor\searly\sretirement\spackage' | cut -d: -f1 > p1
 awk '{$1 = $1 - 1; print}' p1 | tail -n +2 > p2
 echo end >> p2
