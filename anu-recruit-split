@@ -1,0 +1,15 @@
+pdfgrep -n 'redundancy' $@ | grep -e 'Have\syou\saccepted\sa\sredundancy\sor\searly\sretirement\spackage' | cut -d: -f1 > p1
+awk '{$1 = $1 - 1; print}' p1 | tail -n +2 > p2
+echo end >> p2
+paste p1 p2 | tr -s '\t' '-' > ranges
+rm p1 p2
+for range in `cat ranges`; do
+	pdftk $@ cat $range output pages$range.pdf;
+	name=`pdftotext pages$range.pdf - | head -n 1 | iconv -t ascii//TRANSLIT`;
+	lastname=`echo $name | rev | cut -d ' ' -f 1 | rev`;
+	othernames=`echo $name | cut -d ' ' -f 2- | rev | cut -d ' ' -f 2- | rev`;
+	echo $lastname, $othernames
+	mkdir -p "output/$lastname, $othernames"
+	mv pages$range.pdf "output/$lastname, $othernames/application.pdf"
+done
+rm ranges
